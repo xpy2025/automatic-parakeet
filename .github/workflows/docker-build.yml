@@ -1,0 +1,25 @@
+name: 构建并推送Docker镜像到Docker Hub
+
+on:
+  push:
+    branches: [ main ]  # 推送到main分支时触发
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 登录Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: 构建并推送镜像
+        uses: docker/build-push-action@v5
+        with:
+          context: .  # Dockerfile所在目录（根目录）
+          push: true
+          tags: ${{ vars.DOCKER_HUB_USERNAME }}/automatic-parakeet:latest  # 镜像标签（格式：用户名/仓库名:版本）
